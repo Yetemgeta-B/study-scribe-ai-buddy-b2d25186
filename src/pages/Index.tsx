@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { AppProvider, useApp } from '@/context/AppContext';
@@ -8,6 +7,7 @@ import SchedulePage from '@/components/schedule/SchedulePage';
 import PlannerPage from '@/components/planner/PlannerPage';
 import AssistantPage from '@/components/assistant/AssistantPage';
 import SettingsPage from '@/components/settings/SettingsPage';
+import CalculatorPage from '@/components/calculator/CalculatorPage';
 
 const AppContent: React.FC = () => {
   const { activePage } = useApp();
@@ -26,6 +26,8 @@ const AppContent: React.FC = () => {
         return <AssistantPage />;
       case 'settings':
         return <SettingsPage />;
+      case 'calculator':
+        return <CalculatorPage />;
       default:
         return <HomePage />;
     }
