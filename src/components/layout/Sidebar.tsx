@@ -2,16 +2,18 @@
 import React from 'react';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
-import { Book, Calendar, Clock, Search, Settings } from 'lucide-react';
+import { Book, Calculator, Calendar, Clock, Home, MessageSquare, Settings } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
   const { activePage, setActivePage } = useApp();
 
   const navItems = [
+    { name: 'Home', icon: <Home size={18} />, id: 'home' },
     { name: 'Subjects', icon: <Book size={18} />, id: 'subjects' },
     { name: 'Schedule', icon: <Calendar size={18} />, id: 'schedule' },
     { name: 'Study Planner', icon: <Clock size={18} />, id: 'planner' },
-    { name: 'AI Assistant', icon: <Search size={18} />, id: 'assistant' },
+    { name: 'AI Assistant', icon: <MessageSquare size={18} />, id: 'assistant' },
+    { name: 'Calculator', icon: <Calculator size={18} />, id: 'calculator' },
     { name: 'Settings', icon: <Settings size={18} />, id: 'settings' },
   ];
 

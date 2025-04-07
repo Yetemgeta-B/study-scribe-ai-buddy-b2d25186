@@ -2,6 +2,7 @@
 import React from 'react';
 import Layout from '@/components/layout/Layout';
 import { AppProvider, useApp } from '@/context/AppContext';
+import HomePage from '@/components/pages/HomePage';
 import SubjectsPage from '@/components/pages/SubjectsPage';
 import SchedulePage from '@/components/schedule/SchedulePage';
 import PlannerPage from '@/components/planner/PlannerPage';
@@ -13,6 +14,8 @@ const AppContent: React.FC = () => {
 
   const renderPage = () => {
     switch (activePage) {
+      case 'home':
+        return <HomePage />;
       case 'subjects':
         return <SubjectsPage />;
       case 'schedule':
@@ -24,7 +27,7 @@ const AppContent: React.FC = () => {
       case 'settings':
         return <SettingsPage />;
       default:
-        return <SubjectsPage />;
+        return <HomePage />;
     }
   };
 
