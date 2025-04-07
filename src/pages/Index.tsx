@@ -1,13 +1,45 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React from 'react';
+import Layout from '@/components/layout/Layout';
+import { AppProvider, useApp } from '@/context/AppContext';
+import SubjectsPage from '@/components/pages/SubjectsPage';
+import SchedulePage from '@/components/schedule/SchedulePage';
+import PlannerPage from '@/components/planner/PlannerPage';
+import AssistantPage from '@/components/assistant/AssistantPage';
+import SettingsPage from '@/components/settings/SettingsPage';
+
+const AppContent: React.FC = () => {
+  const { activePage } = useApp();
+
+  const renderPage = () => {
+    switch (activePage) {
+      case 'subjects':
+        return <SubjectsPage />;
+      case 'schedule':
+        return <SchedulePage />;
+      case 'planner':
+        return <PlannerPage />;
+      case 'assistant':
+        return <AssistantPage />;
+      case 'settings':
+        return <SettingsPage />;
+      default:
+        return <SubjectsPage />;
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <Layout>
+      {renderPage()}
+    </Layout>
+  );
+};
+
+const Index: React.FC = () => {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   );
 };
 
