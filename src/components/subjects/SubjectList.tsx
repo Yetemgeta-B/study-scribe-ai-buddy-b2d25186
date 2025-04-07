@@ -5,7 +5,7 @@ import SubjectCard from '@/components/subjects/SubjectCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus } from 'lucide-react';
+import { Plus, Book } from 'lucide-react';
 import { getRandomColor } from '@/lib/utils';
 
 const SubjectList: React.FC = () => {
