@@ -129,7 +129,7 @@ const AssistantPage: React.FC = () => {
             <SelectValue placeholder="Select subject context" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">No specific subject</SelectItem>
+            <SelectItem value="none">No specific subject</SelectItem>
             {subjects.map((subject) => (
               <SelectItem key={subject.id} value={subject.id}>
                 {subject.name}
