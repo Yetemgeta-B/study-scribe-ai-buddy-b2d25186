@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Subject, Resource, ScheduleCell, StudyPlan, ChatMessage } from '@/types';
 import { generateId } from '@/lib/utils';
@@ -123,11 +122,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
   
   const updateSubject = (updatedSubject: Subject) => {
-    setSubjects(prev => 
-      prev.map(subject => 
+    setSubjects(prevSubjects => 
+      prevSubjects.map(subject => 
         subject.id === updatedSubject.id ? updatedSubject : subject
       )
     );
+    setActiveSubject(updatedSubject);
   };
   
   const deleteSubject = (id: string) => {
@@ -228,32 +228,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setChatHistory(prev => [...prev, newMessage]);
   };
   
+  const contextValue = {
+    subjects,
+    activeSubject,
+    scheduleData,
+    studyPlans,
+    chatHistory,
+    activePage,
+    apiKey,
+    setApiKey,
+    setActivePage,
+    addSubject,
+    updateSubject,
+    deleteSubject,
+    setActiveSubject,
+    addResource,
+    updateResource,
+    deleteResource,
+    openResource,
+    updateScheduleCell,
+    addStudyPlan,
+    updateStudyPlan,
+    deleteStudyPlan,
+    addChatMessage
+  };
+
   return (
     <AppContext.Provider
-      value={{
-        subjects,
-        activeSubject,
-        scheduleData,
-        studyPlans,
-        chatHistory,
-        activePage,
-        apiKey,
-        setApiKey,
-        setActivePage,
-        addSubject,
-        updateSubject,
-        deleteSubject,
-        setActiveSubject,
-        addResource,
-        updateResource,
-        deleteResource,
-        openResource,
-        updateScheduleCell,
-        addStudyPlan,
-        updateStudyPlan,
-        deleteStudyPlan,
-        addChatMessage
-      }}
+      value={contextValue}
     >
       {children}
     </AppContext.Provider>

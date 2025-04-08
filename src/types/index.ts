@@ -1,3 +1,4 @@
+
 export interface Subject {
   id: string;
   name: string;
@@ -15,6 +16,24 @@ export interface Resource {
   url?: string;
   content?: string;
   subjectId: string;
+  createdAt: Date;
+  annotations?: Annotation[];
+  bookmarks?: Bookmark[];
+}
+
+export interface Annotation {
+  id: string;
+  page: number;
+  text: string;
+  position: { x: number; y: number };
+  color: string;
+  createdAt: Date;
+}
+
+export interface Bookmark {
+  id: string;
+  page: number;
+  title: string;
   createdAt: Date;
 }
 

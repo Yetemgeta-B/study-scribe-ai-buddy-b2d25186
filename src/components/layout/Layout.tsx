@@ -104,56 +104,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="hover:text-primary hover:scale-105 transition-all">
-                    <Book className="mr-2 h-4 w-4" />
-                    Subjects
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[400px] gap-3 p-4 md:grid-cols-2">
-                      <li className="row-span-3">
-                        <NavigationMenuLink asChild>
-                          <a
-                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-primary/50 to-primary p-6 no-underline outline-none focus:shadow-md transition-all hover:shadow-xl duration-300"
-                            onClick={() => setActivePage('subjects')}
-                          >
-                            <Book className="h-6 w-6 text-white" />
-                            <div className="mt-4 mb-2 text-lg font-medium text-white">
-                              Subjects
-                            </div>
-                            <p className="text-sm leading-tight text-white/90">
-                              Manage your subjects and resources
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <a
-                            onClick={() => setActivePage('subjects')}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">Add Subject</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              Create a new subject for your studies
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <a
-                            onClick={() => setActivePage('subjects')}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
-                          >
-                            <div className="text-sm font-medium leading-none">Resources</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                              View and manage your study resources
-                            </p>
-                          </a>
-                        </NavigationMenuLink>
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
+                  <Link to="/">
+                    <NavigationMenuLink 
+                      className={`${navigationMenuTriggerStyle()} transition-all hover:text-primary hover:scale-105`} 
+                      onClick={() => setActivePage('subjects')}
+                    >
+                      <Book className="mr-2 h-4 w-4" />
+                      Subjects
+                    </NavigationMenuLink>
+                  </Link>
                 </NavigationMenuItem>
                 
                 <NavigationMenuItem>
