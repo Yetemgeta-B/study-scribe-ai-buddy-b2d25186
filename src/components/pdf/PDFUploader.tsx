@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Upload, File, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner'; 
 import PDFViewer from './PDFViewer';
 
 const ALLOWED_TYPES = ['application/pdf'];
@@ -27,12 +28,14 @@ const PDFUploader: React.FC<PDFUploaderProps> = ({ onUploadComplete }) => {
     // Validate file type
     if (!ALLOWED_TYPES.includes(file.type)) {
       setError('Please upload a PDF file');
+      toast.error('Please upload a PDF file');
       return;
     }
     
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       setError(`File size exceeds maximum limit (${MAX_FILE_SIZE / (1024 * 1024)}MB)`);
+      toast.error(`File size exceeds maximum limit (${MAX_FILE_SIZE / (1024 * 1024)}MB)`);
       return;
     }
     
@@ -47,6 +50,7 @@ const PDFUploader: React.FC<PDFUploaderProps> = ({ onUploadComplete }) => {
     // Notify parent component if callback exists
     if (onUploadComplete) {
       onUploadComplete(file);
+      toast.success('PDF uploaded successfully');
     }
   };
   
@@ -176,4 +180,4 @@ const PDFUploader: React.FC<PDFUploaderProps> = ({ onUploadComplete }) => {
   );
 };
 
-export default PDFUploader; 
+export default PDFUploader;

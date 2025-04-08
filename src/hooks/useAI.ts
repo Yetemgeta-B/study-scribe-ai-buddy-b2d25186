@@ -1,5 +1,7 @@
+
 import { useState } from 'react';
 import { useApp } from '@/context/AppContext';
+import { toast } from 'sonner';
 
 export const useAI = () => {
   const { apiKey } = useApp();
@@ -8,6 +10,13 @@ export const useAI = () => {
   // Generate summary from text
   const generateSummary = async (text: string) => {
     setIsLoading(true);
+    
+    if (!apiKey) {
+      toast.error("API key is missing. Please add your API key in Settings.");
+      setIsLoading(false);
+      return "API key is required to generate summary.";
+    }
+    
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -31,10 +40,16 @@ export const useAI = () => {
         })
       });
       
+      if (!response.ok) {
+        throw new Error(`API responded with status ${response.status}`);
+      }
+      
       const data = await response.json();
+      toast.success("Summary generated successfully");
       return data.choices[0].message.content;
     } catch (error) {
       console.error('Error generating summary:', error);
+      toast.error("Failed to generate summary");
       return 'Failed to generate summary.';
     } finally {
       setIsLoading(false);
@@ -44,6 +59,13 @@ export const useAI = () => {
   // Create flashcards from text
   const createFlashcards = async (text: string) => {
     setIsLoading(true);
+    
+    if (!apiKey) {
+      toast.error("API key is missing. Please add your API key in Settings.");
+      setIsLoading(false);
+      return [];
+    }
+    
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -67,6 +89,10 @@ export const useAI = () => {
         })
       });
       
+      if (!response.ok) {
+        throw new Error(`API responded with status ${response.status}`);
+      }
+      
       const data = await response.json();
       const content = data.choices[0].message.content;
       
@@ -76,13 +102,17 @@ export const useAI = () => {
                         [null, content];
                         
       try {
-        return JSON.parse(jsonMatch[1] || content);
+        const flashcards = JSON.parse(jsonMatch[1] || content);
+        toast.success("Flashcards created successfully");
+        return flashcards;
       } catch (e) {
         console.error('Error parsing JSON from AI response:', e);
+        toast.error("Failed to parse flashcards data");
         return [];
       }
     } catch (error) {
       console.error('Error creating flashcards:', error);
+      toast.error("Failed to create flashcards");
       return [];
     } finally {
       setIsLoading(false);
@@ -92,6 +122,13 @@ export const useAI = () => {
   // Generate quiz from text
   const generateQuiz = async (text: string) => {
     setIsLoading(true);
+    
+    if (!apiKey) {
+      toast.error("API key is missing. Please add your API key in Settings.");
+      setIsLoading(false);
+      return [];
+    }
+    
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -115,6 +152,10 @@ export const useAI = () => {
         })
       });
       
+      if (!response.ok) {
+        throw new Error(`API responded with status ${response.status}`);
+      }
+      
       const data = await response.json();
       const content = data.choices[0].message.content;
       
@@ -124,13 +165,17 @@ export const useAI = () => {
                       [null, content];
                       
       try {
-        return JSON.parse(jsonMatch[1] || content);
+        const quiz = JSON.parse(jsonMatch[1] || content);
+        toast.success("Quiz generated successfully");
+        return quiz;
       } catch (e) {
         console.error('Error parsing JSON from AI response:', e);
+        toast.error("Failed to parse quiz data");
         return [];
       }
     } catch (error) {
       console.error('Error generating quiz:', error);
+      toast.error("Failed to generate quiz");
       return [];
     } finally {
       setIsLoading(false);
@@ -140,6 +185,13 @@ export const useAI = () => {
   // Ask question about the document
   const askQuestion = async (text: string, question: string) => {
     setIsLoading(true);
+    
+    if (!apiKey) {
+      toast.error("API key is missing. Please add your API key in Settings.");
+      setIsLoading(false);
+      return "API key is required to answer questions.";
+    }
+    
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -163,10 +215,16 @@ export const useAI = () => {
         })
       });
       
+      if (!response.ok) {
+        throw new Error(`API responded with status ${response.status}`);
+      }
+      
       const data = await response.json();
+      toast.success("Answer generated");
       return data.choices[0].message.content;
     } catch (error) {
       console.error('Error asking question:', error);
+      toast.error("Failed to get an answer");
       return 'Failed to get an answer.';
     } finally {
       setIsLoading(false);
@@ -180,4 +238,4 @@ export const useAI = () => {
     askQuestion,
     isLoading
   };
-}; 
+};

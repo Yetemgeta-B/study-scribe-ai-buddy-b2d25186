@@ -22,13 +22,17 @@ import { BookOpen as BookOpenIcon, FileText as FileTextIcon, Calendar as Calenda
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import PDFUploader from '@/components/pdf/PDFUploader';
+import PDFViewer from '@/components/pdf/PDFViewer';
+import { Resource } from '@/types';
+import { toast } from 'sonner';
 
 const SubjectDetail: React.FC = () => {
-  const { activeSubject, setActiveSubject, deleteSubject, updateSubject } = useApp();
+  const { activeSubject, setActiveSubject, deleteSubject, updateSubject, addResource } = useApp();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [isEditing, setIsEditing] = useState(false);
   const [editableSubject, setEditableSubject] = useState<any>(null);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   
   // States for grading components
   const [gradingComponents, setGradingComponents] = useState([
@@ -38,27 +42,14 @@ const SubjectDetail: React.FC = () => {
     { name: 'Participation', weight: 10 }
   ]);
   
-  const [resources, setResources] = useState([
-    {
-      id: '1',
-      title: 'Course Syllabus',
-      type: 'pdf',
-      date: '2023-09-01',
-    },
-    {
-      id: '2',
-      title: 'Lecture Notes - Week 1',
-      type: 'pdf',
-      date: '2023-09-05',
-    },
-    {
-      id: '3',
-      title: 'Course Website',
-      type: 'link',
-      url: 'https://example.com/course',
-      date: '2023-09-01',
-    }
+  const [objectives, setObjectives] = useState([
+    'Understand core concepts and principles',
+    'Develop analytical and critical thinking skills',
+    'Apply theoretical knowledge to practical problems',
+    'Collaborate effectively in team settings'
   ]);
+  
+  const [resources, setResources] = useState<Resource[]>([]);
   
   const [showPdfUploader, setShowPdfUploader] = useState(false);
 
@@ -81,37 +72,48 @@ const SubjectDetail: React.FC = () => {
   
   const saveChanges = () => {
     if (editableSubject) {
-      updateSubject({
+      const updatedSubject = {
         ...activeSubject,
         name: editableSubject.name,
         description: editableSubject.description,
         schedule: editableSubject.schedule
-      });
+      };
+      
+      updateSubject(updatedSubject);
       setIsEditing(false);
       setEditableSubject(null);
+      toast.success("Subject details updated successfully");
     }
   };
 
   const handleDelete = () => {
     deleteSubject(activeSubject.id);
     setIsDeleteDialogOpen(false);
+    toast.success("Subject deleted successfully");
   };
 
   const handleAddResource = () => {
     setShowPdfUploader(true);
+    setSelectedResource(null);
   };
   
   const handleUploadComplete = (file: File) => {
+    // Create file URL
+    const fileUrl = URL.createObjectURL(file);
+    
     // Create a new resource entry
-    const newResource = {
-      id: Date.now().toString(),
-      title: file.name.replace('.pdf', ''),
+    const newResource: Omit<Resource, 'id' | 'createdAt'> = {
+      name: file.name.replace('.pdf', ''),
       type: 'pdf',
-      date: new Date().toISOString().split('T')[0],
+      path: fileUrl,
+      subjectId: activeSubject.id,
     };
     
-    setResources([newResource, ...resources]);
+    // Add the resource to the subject
+    addResource(newResource);
+    
     setShowPdfUploader(false);
+    toast.success(`Resource "${newResource.name}" added successfully`);
   };
   
   const handleUpdateGradingComponent = (index: number, field: 'name' | 'weight', value: string) => {
@@ -133,6 +135,27 @@ const SubjectDetail: React.FC = () => {
     const updatedComponents = [...gradingComponents];
     updatedComponents.splice(index, 1);
     setGradingComponents(updatedComponents);
+  };
+
+  const handleAddObjective = () => {
+    setObjectives([...objectives, 'New course objective']);
+  };
+
+  const handleUpdateObjective = (index: number, value: string) => {
+    const updatedObjectives = [...objectives];
+    updatedObjectives[index] = value;
+    setObjectives(updatedObjectives);
+  };
+
+  const handleRemoveObjective = (index: number) => {
+    const updatedObjectives = [...objectives];
+    updatedObjectives.splice(index, 1);
+    setObjectives(updatedObjectives);
+  };
+
+  const openResource = (resource: Resource) => {
+    setSelectedResource(resource);
+    setActiveTab('pdf-viewer');
   };
 
   return (
@@ -203,7 +226,7 @@ const SubjectDetail: React.FC = () => {
 
       {/* Ribbon-like interface */}
       <div className="mb-6 border rounded-lg overflow-hidden bg-card shadow-sm">
-        <div className="flex items-center p-2 bg-muted/50">
+        <div className="flex items-center p-2 bg-muted/50 overflow-x-auto">
           <Button 
             variant={activeTab === 'overview' ? 'secondary' : 'ghost'}
             className="rounded-sm gap-2"
@@ -228,6 +251,17 @@ const SubjectDetail: React.FC = () => {
             <CalendarIcon className="h-4 w-4" />
             Schedule
           </Button>
+          
+          {selectedResource && (
+            <Button 
+              variant={activeTab === 'pdf-viewer' ? 'secondary' : 'ghost'}
+              className="rounded-sm gap-2"
+              onClick={() => setActiveTab('pdf-viewer')}
+            >
+              <File className="h-4 w-4" />
+              {selectedResource.name}
+            </Button>
+          )}
           
           <div className="ml-auto flex items-center">
             <Button variant="ghost" size="sm" className="gap-2">
@@ -279,18 +313,39 @@ const SubjectDetail: React.FC = () => {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-lg font-medium">Course Objectives</h3>
                       {isEditing && (
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={handleAddObjective}>
                           <Plus className="h-3 w-3 mr-1" />
                           Add Objective
                         </Button>
                       )}
                     </div>
-                    <ul>
-                      <li>Understand core concepts and principles</li>
-                      <li>Develop analytical and critical thinking skills</li>
-                      <li>Apply theoretical knowledge to practical problems</li>
-                      <li>Collaborate effectively in team settings</li>
-                    </ul>
+                    {isEditing ? (
+                      <div className="space-y-2">
+                        {objectives.map((objective, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <Input
+                              value={objective}
+                              onChange={(e) => handleUpdateObjective(index, e.target.value)}
+                              className="flex-grow"
+                            />
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-destructive"
+                              onClick={() => handleRemoveObjective(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <ul>
+                        {objectives.map((objective, index) => (
+                          <li key={index}>{objective}</li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                   
                   <div>
@@ -389,7 +444,7 @@ const SubjectDetail: React.FC = () => {
                 </Card>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {resources.map((resource) => (
+                  {activeSubject.resources.map((resource) => (
                     <motion.div
                       key={resource.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -400,9 +455,9 @@ const SubjectDetail: React.FC = () => {
                         <CardHeader className="p-4">
                           <div className="flex items-start justify-between">
                             <div>
-                              <CardTitle className="text-lg">{resource.title}</CardTitle>
+                              <CardTitle className="text-lg">{resource.name}</CardTitle>
                               <CardDescription>
-                                {new Date(resource.date).toLocaleDateString()}
+                                {resource.createdAt ? new Date(resource.createdAt).toLocaleDateString() : 'Unknown date'}
                               </CardDescription>
                             </div>
                             {resource.type === 'pdf' ? (
@@ -420,11 +475,7 @@ const SubjectDetail: React.FC = () => {
                           <Button 
                             variant="outline" 
                             className="w-full" 
-                            onClick={() => {
-                              if (resource.type === 'pdf') {
-                                setActiveTab('pdf-viewer');
-                              }
-                            }}
+                            onClick={() => openResource(resource)}
                           >
                             {resource.type === 'pdf' ? 'View PDF' : 'Open Link'}
                           </Button>
@@ -477,6 +528,12 @@ const SubjectDetail: React.FC = () => {
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {activeTab === 'pdf-viewer' && selectedResource && selectedResource.path && (
+            <div>
+              <PDFViewer file={selectedResource.path} />
+            </div>
           )}
         </div>
       </div>

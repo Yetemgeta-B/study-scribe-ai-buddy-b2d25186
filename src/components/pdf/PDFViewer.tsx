@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Button } from '@/components/ui/button';
@@ -53,19 +52,16 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
   const [activeTab, setActiveTab] = useState('viewer');
   const documentRef = useRef<HTMLDivElement>(null);
   
-  // Search functionality
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState<Array<{ page: number; matches: number }>>([]);
   const [currentMatch, setCurrentMatch] = useState(0);
   
-  // Annotations and bookmarks
   const [annotations, setAnnotations] = useState<Annotation[]>([]);
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [showAnnotationModal, setShowAnnotationModal] = useState(false);
   const [newAnnotationText, setNewAnnotationText] = useState('');
   const [annotationPosition, setAnnotationPosition] = useState({ x: 0, y: 0 });
   
-  // States for AI-generated content
   const [summary, setSummary] = useState<string>('');
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
@@ -85,14 +81,11 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
   
   const extractTextFromPDF = async () => {
     try {
-      // This is a simplified version - in a real implementation, 
-      // you'd use a more robust PDF text extraction method
       let pdfSource: string | ArrayBuffer;
       
       if (typeof file === 'string') {
         pdfSource = file;
       } else {
-        // Convert File to ArrayBuffer
         pdfSource = await file.arrayBuffer();
       }
       
@@ -148,7 +141,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
     setChatAnswer(answer);
   };
   
-  // Navigation functions
   const goToPage = (pageNum: number) => {
     if (pageNum >= 1 && pageNum <= (numPages || 0)) {
       setPageNumber(pageNum);
@@ -167,7 +159,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
     }
   };
   
-  // Zoom functions
   const zoomIn = () => {
     setScale((prevScale) => Math.min(prevScale + 0.2, 3));
   };
@@ -180,7 +171,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
     setRotation((prevRotation) => (prevRotation + 90) % 360);
   };
   
-  // Flashcard navigation
   const nextFlashcard = () => {
     if (activeFlashcard < flashcards.length - 1) {
       setActiveFlashcard(activeFlashcard + 1);
@@ -195,7 +185,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
     }
   };
   
-  // Quiz functions
   const handleSelectQuizAnswer = (questionIndex: number, optionIndex: number) => {
     const newAnswers = [...selectedQuizAnswers];
     newAnswers[questionIndex] = optionIndex;
@@ -216,7 +205,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
     };
   };
   
-  // Bookmark functions
   const addBookmark = () => {
     const newBookmark = {
       id: Date.now().toString(),
@@ -235,7 +223,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
     setBookmarks(bookmarks.filter(bookmark => bookmark.id !== id));
   };
   
-  // Download PDF
   const downloadPDF = () => {
     if (typeof file === 'string') {
       const link = document.createElement('a');
@@ -258,7 +245,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
   
   return (
     <div className="flex flex-col">
-      {/* PDF Viewer Toolbar */}
       <div className="bg-card border rounded-t-lg p-2 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" size="sm" onClick={prevPage} disabled={pageNumber <= 1}>
@@ -328,7 +314,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
       </div>
       
       <div className="flex flex-col md:flex-row gap-6">
-        {/* PDF Document Viewer */}
         <div className="w-full md:w-1/2 flex flex-col">
           <div 
             className="border rounded-b-lg overflow-hidden mb-4 bg-white dark:bg-gray-900 flex justify-center"
@@ -359,7 +344,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
             </ScrollArea>
           </div>
           
-          {/* Bookmarks */}
           {bookmarks.length > 0 && (
             <div className="mb-4">
               <h3 className="text-sm font-medium mb-2">Bookmarks</h3>
@@ -390,7 +374,6 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ file }) => {
           )}
         </div>
         
-        {/* AI Tools Panel */}
         <div className="w-full md:w-1/2">
           <Tabs value={activeTab === 'viewer' ? 'summary' : activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full">
