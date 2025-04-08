@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useAI } from '@/hooks/useAI';
 import { Loader2, ZoomIn, ZoomOut, RotateCcw, Save, Bookmark, Search, MessageSquare, ChevronLeft, ChevronRight, AlertCircle, Download } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Initialize PDF.js worker
