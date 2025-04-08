@@ -1,10 +1,10 @@
-
 export interface Subject {
   id: string;
   name: string;
   color: string;
   resources: Resource[];
   description?: string;
+  schedule?: string;
 }
 
 export interface Resource {
